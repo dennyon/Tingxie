@@ -28,6 +28,7 @@ class WordPicker {
         const pickBtn = document.getElementById('pickBtn');
         const readWordBtn = document.getElementById('readWordBtn');
         const backBtn = document.getElementById('backBtn');
+        const restartBtn = document.getElementById('restartBtn');
         const backToSetupBtn = document.getElementById('backToSetupBtn');
         const wordCountInput = document.getElementById('wordCount');
 
@@ -41,6 +42,7 @@ class WordPicker {
         pickBtn.addEventListener('click', () => this.pickWord());
         readWordBtn.addEventListener('click', () => this.readWordAloud());
         backBtn.addEventListener('click', () => this.goBack());
+        restartBtn.addEventListener('click', () => this.restart());
         backToSetupBtn.addEventListener('click', () => this.goBackToSetup());
     }
 
@@ -313,6 +315,29 @@ class WordPicker {
     }
 
     goBack() {
+        // Stop any ongoing speech
+        const speechSynthesis = window.speechSynthesis || window.webkitSpeechSynthesis;
+        if (speechSynthesis) {
+            speechSynthesis.cancel();
+        }
+
+        // Reset state but keep the words
+        this.currentWord = null;
+        this.remainingWords = [...this.words]; // Restore the list
+
+        // Switch back to input page
+        document.getElementById('pickerPage').style.display = 'none';
+        document.getElementById('inputPage').style.display = 'block';
+
+        // Reset button states
+        document.getElementById('pickBtn').disabled = false;
+        document.getElementById('readWordBtn').disabled = false;
+
+        // Clear message
+        this.clearMessage('pickerPage');
+    }
+
+    restart() {
         // Stop any ongoing speech
         const speechSynthesis = window.speechSynthesis || window.webkitSpeechSynthesis;
         if (speechSynthesis) {

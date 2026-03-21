@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Picker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container" id="setupPage">
+        <h1>Word Picker</h1>
+        <p class="subtitle">Learn vocabulary by listening to random words</p>
+        
+        <div class="section">
+            <h2>Setup</h2>
+            <div class="setup-group">
+                <label for="wordCount">How many words do you want to learn?</label>
+                <div class="count-input-wrapper">
+                    <input type="number" id="wordCount" min="1" max="100" value="10" placeholder="Enter number of words">
+                </div>
+                <p class="hint">Enter a number between 1 and 100</p>
+                <button id="setupBtn" class="btn btn-primary">Next</button>
+            </div>
+        </div>
+
+        <div class="messages">
+            <p id="setupMessage" class="message"></p>
+        </div>
+    </div>
+
+    <div class="container" id="inputPage" style="display:none;">
+        <h1>Word Picker</h1>
+        <p id="inputSubtitle" class="subtitle">Enter your words</p>
+        
+        <div class="section">
+            <h2>Input Words</h2>
+            <div id="wordsInputGrid" class="words-input-grid">
+                <!-- Dynamically generated word inputs will go here -->
+            </div>
+            <button id="submitBtn" class="btn btn-primary">Submit Words</button>
+            <button id="backToSetupBtn" class="btn btn-secondary">Back</button>
+        </div>
+
+        <div class="messages">
+            <p id="message" class="message"></p>
+        </div>
+    </div>
+
+    <div class="container" id="pickerPage" style="display:none;">
+        <h1>Word Picker</h1>
+        <p class="subtitle">Listen to the randomly picked word</p>
+        
+        <div class="section">
+            <div class="audio-section">
+                <p class="instruction">Click the button below to hear the randomly picked word:</p>
+                <button id="readWordBtn" class="btn btn-primary btn-large">
+                    <span class="button-icon">🔊</span> Read Word
+                </button>
+                <p id="wordsRemaining" class="words-remaining">Words remaining: 0</p>
+            </div>
+
+            <div class="button-group">
+                <button id="pickBtn" class="btn btn-primary">Pick Next Word</button>
+                <button id="backBtn" class="btn btn-secondary">Back to Input</button>
+            </div>
+        </div>
+
+        <div class="messages">
+            <p id="pickerMessage" class="message"></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -5,9 +5,7 @@ A simple and elegant web application that allows users to input 10 words in any 
 ## Features
 
 - **Flexible Word Count**: Choose how many words you want to learn (1-100 words)
-- **Persistence via Cookie**: Word list and state are stored in cookies so refresh does not clear your current session
 - **Multi-language Support**: Words can be in any language (Chinese, Spanish, French, Arabic, Hindi, Japanese, Korean, etc.)
-- **Chinese Hanyu Pinyin**: If the current word contains Chinese characters, an optional pinyin transcription is displayed during audio playback
 - **Audio-based Learning**: After submitting words, users are taken to a dedicated page for audio-only learning
 - **Text-to-Speech**: Click the "🔊 Read Word" button to hear the word spoken aloud. The browser automatically detects and uses the appropriate voice for each language
 - **Random Selection**: Pick words randomly from the list

@@ -9,7 +9,6 @@ class WordPicker {
     }
 
     init() {
-        this.loadFromCookie();
         this.setupEventListeners();
         this.checkSpeechSynthesis();
     }
@@ -45,59 +44,6 @@ class WordPicker {
         backBtn.addEventListener('click', () => this.goBack());
         restartBtn.addEventListener('click', () => this.restart());
         backToSetupBtn.addEventListener('click', () => this.goBackToSetup());
-    }
-
-    setCookie(name, value, days) {
-        const expires = new Date(Date.now() + days * 864e5).toUTCString();
-        document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`;
-    }
-
-    clearCookie(name) {
-        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/`;
-    }
-
-    getCookie(name) {
-        return document.cookie.split('; ').reduce((r, v) => {
-            const parts = v.split('=');
-            return parts[0] === name ? decodeURIComponent(parts[1]) : r;
-        }, '');
-    }
-
-    saveToCookie() {
-        this.setCookie('wordPickerCount', this.wordCount, 30);
-        this.setCookie('wordPickerWords', JSON.stringify(this.words), 30);
-        this.setCookie('wordPickerRemaining', JSON.stringify(this.remainingWords), 30);
-    }
-
-    loadFromCookie() {
-        const savedCount = parseInt(this.getCookie('wordPickerCount'), 10);
-        const savedWords = this.getCookie('wordPickerWords');
-        const savedRemaining = this.getCookie('wordPickerRemaining');
-
-        if (!isNaN(savedCount) && savedWords) {
-            this.wordCount = savedCount;
-            document.getElementById('wordCount').value = savedCount;
-            this.generateWordInputs();
-
-            try {
-                this.words = JSON.parse(savedWords);
-                this.remainingWords = savedRemaining ? JSON.parse(savedRemaining) : [...this.words];
-            } catch {
-                this.words = [];
-                this.remainingWords = [];
-                return;
-            }
-
-            this.words.forEach((word, i) => {
-                const input = document.getElementById(`word${i + 1}`);
-                if (input) input.value = word;
-            });
-
-            this.disableInputs();
-            this.isSubmitted = true;
-            this.switchToPickerPage();
-            this.updateRemainingCount();
-        }
     }
 
     setupWordCount() {
@@ -184,9 +130,6 @@ class WordPicker {
         this.remainingWords = [...words];
         this.isSubmitted = true;
 
-        // Persist to cookie
-        this.saveToCookie();
-
         // Disable inputs
         this.disableInputs();
 
@@ -249,12 +192,6 @@ class WordPicker {
 
         // Update remaining count
         this.updateRemainingCount();
-
-        // Save remaining list in cookie
-        this.saveToCookie();
-
-        // Show pinyin for Chinese word if needed
-        this.updatePinyinDisplay();
 
         // Clear message
         this.clearMessage('pickerPage');
@@ -377,36 +314,6 @@ class WordPicker {
             `Words remaining: ${remaining} / ${this.words.length}`;
     }
 
-    getPinyin(text) {
-        if (window.Pinyin && typeof window.Pinyin.getPinyin === 'function') {
-            return window.Pinyin.getPinyin(text, ' ');
-        }
-        if (window.pinyin && typeof window.pinyin === 'function') {
-            return window.pinyin(text, {toneType: 'none', v: 'u', type: 'array'}).join(' ');
-        }
-        // fallback: no library
-        return 'Pinyin unavailable';
-    }
-
-    updatePinyinDisplay() {
-        const pinyinWrapper = document.getElementById('pinyinWrapper');
-        const pinyinText = document.getElementById('pinyinText');
-
-        if (!this.currentWord) {
-            pinyinWrapper.style.display = 'none';
-            return;
-        }
-
-        const chineseRegex = /[\u4E00-\u9FFF\u3400-\u4DBF]/;
-        if (chineseRegex.test(this.currentWord)) {
-            const pinyin = this.getPinyin(this.currentWord);
-            pinyinText.textContent = pinyin;
-            pinyinWrapper.style.display = 'block';
-        } else {
-            pinyinWrapper.style.display = 'none';
-        }
-    }
-
     goBack() {
         // Stop any ongoing speech
         const speechSynthesis = window.speechSynthesis || window.webkitSpeechSynthesis;
@@ -417,9 +324,6 @@ class WordPicker {
         // Reset state but keep the words
         this.currentWord = null;
         this.remainingWords = [...this.words]; // Restore the list
-
-        // Persist state so refresh keeps the word list
-        this.saveToCookie();
 
         // Switch back to input page
         document.getElementById('pickerPage').style.display = 'none';
@@ -439,11 +343,6 @@ class WordPicker {
         if (speechSynthesis) {
             speechSynthesis.cancel();
         }
-
-        // Clear cookies so restart truly resets state
-        this.clearCookie('wordPickerCount');
-        this.clearCookie('wordPickerWords');
-        this.clearCookie('wordPickerRemaining');
 
         // Clear all inputs
         for (let i = 1; i <= this.wordCount; i++) {
